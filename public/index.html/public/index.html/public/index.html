@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Diamond Sports</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Orbitron:wght@700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-diamond">◆</span>
+      <div>
+        <div class="logo-title">DIAMOND SPORTS</div>
+        <div class="logo-sub">D247 · SKY EXCHANGE · BETFAIR</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="live-badge"><span class="live-dot"></span> LIVE</div>
+      <div class="clock" id="clock"></div>
+    </div>
+  </div>
+</header>
+<nav class="sport-nav">
+  <button class="sport-tab active" data-sport="4">🏏 Cricket</button>
+  <button class="sport-tab" data-sport="1">⚽ Football</button>
+  <button class="sport-tab" data-sport="2">🎾 Tennis</button>
+</nav>
+<div class="main">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="section-title">DATA FEED</div>
+      <button class="feed-btn active" data-endpoint="scores">📊 Live Scores</button>
+      <button class="feed-btn" data-endpoint="matches">⚡ All Matches</button>
+      <button class="feed-btn" data-endpoint="frontdata">🎯 Front Data</button>
+      <button class="feed-btn" data-endpoint="markets">💰 Markets</button>
+      <button class="feed-btn" data-endpoint="sports">🌐 Sports List</button>
+    </div>
+    <div class="sidebar-section">
+      <div class="section-title">CUSTOM</div>
+      <input class="custom-input" id="customPath" placeholder="/sports/anything"/>
+      <input class="custom-input" id="customParams" placeholder="sportId=4"/>
+      <button class="fetch-raw-btn" id="fetchRaw">⚡ FETCH RAW</button>
+    </div>
+    <div class="sidebar-section">
+      <div class="section-title">CACHE</div>
+      <div class="cache-stats" id="cacheStats">—</div>
+    </div>
+    <div class="auto-refresh">
+      <label class="toggle-label">
+        <input type="checkbox" id="autoRefresh" checked/>
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        Auto-refresh 30s
+      </label>
+    </div>
+  </aside>
+  <div class="content">
+    <div class="stats-bar">
+      <div class="stat-chip" id="statTotal">— Events</div>
+      <div class="stat-chip" id="statLive">— Live</div>
+      <div class="stat-chip" id="statCached">—</div>
+      <div class="stat-chip" id="statTime">— ms</div>
+    </div>
+    <div class="view-tabs">
+      <button class="view-tab active" data-view="cards">CARDS</button>
+      <button class="view-tab" data-view="table">TABLE</button>
+      <button class="view-tab" data-view="raw">RAW</button>
+    </div>
+    <div id="panelCards" class="panel active"></div>
+    <div id="panelTable" class="panel"></div>
+    <div id="panelRaw" class="panel"><pre id="rawJson" class="raw-json"></pre></div>
+    <div class="loader" id="loader"><div class="loader-ring"></div><div class="loader-text">Fetching…</div></div>
+    <div class="error-box" id="errorBox" style="display:none"><div class="error-title">⚠ Error</div><div class="error-msg" id="errorMsg"></div></div>
+  </div>
+</div>
+<div class="log-toggle" id="logToggle">📋 Log <span id="logCount">0</span></div>
+<div class="log-drawer" id="logDrawer"><div class="log-inner" id="logInner"></div></div>
+<script src="/js/app.js"></script>
+</body>
+</html>

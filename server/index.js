@@ -1,45 +1,35 @@
 require('dotenv').config();
-const express = require('express');
-const axios = require('axios');
-const cors = require('cors');
-const rateLimit = require('express-rate-limit');
-const NodeCache = require('node-cache');
-const path = require('path');
-
-const app = express();
-const cache = new NodeCache({ stdTTL: parseInt(process.env.CACHE_TTL) || 30 });
-
-const API_KEY  = process.env.RAPIDAPI_KEY;
-const API_HOST = process.env.RAPIDAPI_HOST;
-const BASE_URL = 'https://' + API_HOST;
-
+const express=require('express');
+const axios=require('axios');
+const cors=require('cors');
+const rateLimit=require('express-rate-limit');
+const NodeCache=require('node-cache');
+const path=require('path');
+const app=express();
+const cache=new NodeCache({stdTTL:parseInt(process.env.CACHE_TTL)||30});
+const API_KEY=process.env.RAPIDAPI_KEY;
+const API_HOST=process.env.RAPIDAPI_HOST;
+const BASE_URL='https://'+API_HOST;
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../public')));
-
-const limiter = rateLimit({ windowMs: 60000, max: 60 });
-app.use('/api/', limiter);
-
-async function callAPI(endpoint, params) {
-  const key = endpoint + JSON.stringify(params || {});
-  const hit = cache.get(key);
-  if (hit) return { data: hit, cached: true };
-  const res = await axios.get(BASE_URL + endpoint, {
-    headers: { 'x-rapidapi-key': API_KEY, 'x-rapidapi-host': API_HOST },
-    params, timeout: 10000
-  });
-  cache.set(key, res.data);
-  return { data: res.data, cached: false };
+app.use(express.static(path.join(__dirname,'public')));
+const limiter=rateLimit({windowMs:60000,max:60});
+app.use('/api/',limiter);
+async function callAPI(endpoint,params){
+const key=endpoint+JSON.stringify(params||{});
+const hit=cache.get(key);
+if(hit)return{data:hit,cached:true};
+const res=await axios.get(BASE_URL+endpoint,{headers:{'x-rapidapi-key':API_KEY,'x-rapidapi-host':API_HOST},params,timeout:10000});
+cache.set(key,res.data);
+return{data:res.data,cached:false};
 }
-
-app.get('/api/scores',    async (req, res) => { try { res.json({ success: true, ...(await callAPI('/sports/score', { sportId: req.query.sportId || '4' })) }); } catch(e) { res.status(500).json({ success: false, error: e.response?.data || e.message }); } });
-app.get('/api/matches',   async (req, res) => { try { res.json({ success: true, ...(await callAPI('/sports/esid', { sportId: req.query.sportId || '4' })) }); } catch(e) { res.status(500).json({ success: false, error: e.response?.data || e.message }); } });
-app.get('/api/frontdata', async (req, res) => { try { res.json({ success: true, ...(await callAPI('/sports/getAllMatchUsingSportsId', { sportId: req.query.sportId || '4' })) }); } catch(e) { res.status(500).json({ success: false, error: e.response?.data || e.message }); } });
-app.get('/api/markets',   async (req, res) => { try { res.json({ success: true, ...(await callAPI('/sports/markets', { sportId: req.query.sportId || '4' })) }); } catch(e) { res.status(500).json({ success: false, error: e.response?.data || e.message }); } });
-app.get('/api/sports',    async (req, res) => { try { res.json({ success: true, ...(await callAPI('/sports/getPriveteData', {})) }); } catch(e) { res.status(500).json({ success: false, error: e.response?.data || e.message }); } });
-app.get('/api/raw',       async (req, res) => { try { const { path: p, ...params } = req.query; res.json({ success: true, ...(await callAPI(p, params)) }); } catch(e) { res.status(500).json({ success: false, error: e.response?.data || e.message }); } });
-app.get('/api/health',    (req, res) => res.json({ status: 'ok', uptime: process.uptime(), cache: cache.getStats() }));
-app.get('*',              (req, res) => res.sendFile(path.join(__dirname, '../public/index.html')));
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log('Running on port ' + PORT));
+app.get('/api/scores',async(req,res)=>{try{res.json({success:true,...(await callAPI('/sports/score',{sportId:req.query.sportId||'4'}))});}catch(e){res.status(500).json({success:false,error:e.response?.data||e.message});}});
+app.get('/api/matches',async(req,res)=>{try{res.json({success:true,...(await callAPI('/sports/esid',{sportId:req.query.sportId||'4'}))});}catch(e){res.status(500).json({success:false,error:e.response?.data||e.message});}});
+app.get('/api/frontdata',async(req,res)=>{try{res.json({success:true,...(await callAPI('/sports/getAllMatchUsingSportsId',{sportId:req.query.sportId||'4'}))});}catch(e){res.status(500).json({success:false,error:e.response?.data||e.message});}});
+app.get('/api/markets',async(req,res)=>{try{res.json({success:true,...(await callAPI('/sports/markets',{sportId:req.query.sportId||'4'}))});}catch(e){res.status(500).json({success:false,error:e.response?.data||e.message});}});
+app.get('/api/sports',async(req,res)=>{try{res.json({success:true,...(await callAPI('/sports/getPriveteData',{}))});}catch(e){res.status(500).json({success:false,error:e.response?.data||e.message});}});
+app.get('/api/raw',async(req,res)=>{try{const{path:p,...params}=req.query;res.json({success:true,...(await callAPI(p,params))});}catch(e){res.status(500).json({success:false,error:e.response?.data||e.message});}});
+app.get('/api/health',(req,res)=>res.json({status:'ok',uptime:process.uptime(),cache:cache.getStats()}));
+app.get('*',(req,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
+const PORT=process.env.PORT||3000;
+app.listen(PORT,()=>console.log('Running on port '+PORT));
